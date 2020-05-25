@@ -8,12 +8,13 @@ from netifaces import interfaces, ifaddresses, AF_INET
 
 sock = socketio.Client()
 TRED =  '\033[31m' # Red Text
+TLOAD =  '\033[33m' # Red Text
 ENDC = '\033[m'
 ip_addr = '127.0.0.1'
 secondary_ip = False
 
 # Node identity
-node_identity = 1 
+node_identity = int(os.environ.get('NODE_ID', False))
 
 def get_neighbours(identity):
 	file = open('network_config.txt', 'r')
@@ -21,8 +22,10 @@ def get_neighbours(identity):
 	items = matrices[node_identity].rstrip('\n').split(', ')
 	neighbours = [ True if item == "True" else item for item in items ]
 	neighbours = [ False if item == "False" else item for item in neighbours ]
-	for index, item in enumerate(neighbours):
-		print(item, end=' ' if index != 0 else '\n')
+	print("Self ID: ", neighbours[0])
+	print("All possible neighbours are: ")
+	for neighbour in neighbours[1:]:
+		print(neighbour, end=' ')
 	print()
 	return neighbours
 
@@ -37,6 +40,7 @@ def ip4_addresses():
 				address = {'interface': interface, 'address': link[0]['addr'], 'netmask': link[0]['netmask']}
 				if interface == 'wlp6s0' or interface == 'eth0':
 					ip_addr = link[0]['addr']
+					ip_list.append({interface: ip_addr})
 				if interface ==	'wlp6s0:1' or interface ==	'eth0:1':
 					secondary_ip = True
 	return ip_list
@@ -61,7 +65,6 @@ def on_message(data):
 
 @sock.event
 def connect():
-	print("connected!")
 	hostname = socket.gethostname()
 	address_list = ip4_addresses()
 	neighbours = get_neighbours(node_identity)
@@ -76,6 +79,7 @@ def connect():
 		"additional_network_info": address_list
 	}
 	message('join', data)
+	print("connected!")
 
 @sock.event
 def connect_error():
@@ -92,8 +96,12 @@ def reconnect():
 	sock.connect('http://localhost:5000')
 
 if __name__ == '__main__':
-	node_identity = int(input("Enter Node identity: \t")[0])
 	try:
+		print(TLOAD+"initializing Node identity, gathering IP addresses and connecting to Failover Server", ENDC)
+		if node_identity is False:
+			print(TRED+ "ERROR! Could not load Node identity", ENDC)
+			print("Initialize the Node identity with environment variable 'NODE_ID'. Look at README.txt for more info.")
+			exit()
 		while True:
 			if not sock.connected:
 				reconnect()
