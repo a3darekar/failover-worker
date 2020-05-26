@@ -1,12 +1,12 @@
 import socketio
-import socket
-import os
-import time
-import uuid
+import time, datetime, os, socket, uuid
 from netifaces import interfaces, ifaddresses, AF_INET
 
 from timeloop import Timeloop
 from datetime import timedelta
+
+LOGINPASSWD = os.environ.get('PASSWORD', False)
+NODE_ID = int(os.environ.get('NODE_ID', False))
 
 tl = Timeloop()
 sock = socketio.Client()
@@ -14,17 +14,14 @@ TGREEN = '\033[32m' # Green Text
 TRED = '\033[31m' # Red Text
 TLOAD = '\033[33m'
 ENDC = '\033[m'
-ip_addr = '127.0.0.1'
 secondary_ip = False
-
-# Node identity
-NODE_ID = int(os.environ.get('NODE_ID', False))
+primary_ip = None
 
 
-@tl.job(interval=timedelta(seconds=2))
-def sample_job_every_2s():
-	if sock.connected:
-		message('ping', None)
+# @tl.job(interval=timedelta(seconds=2))
+# def ping_beat():
+# 	if sock.connected:
+# 		message('ping', None)
 
 
 def get_neighbors(identity):
@@ -42,20 +39,38 @@ def get_neighbors(identity):
 	return neighbors
 
 
-def ip4_addresses():
+def populate_server_info(ip_addresses):
+	hostname = socket.gethostname()
+	address_list = ip_addresses
+	neighbors = get_neighbors(NODE_ID)
+	data = {
+		"system": hostname,
+		"NODE_ID": NODE_ID,
+		"neighbors": neighbors,
+		"primary_ip": ip_addr,
+		"secondary_ip": secondary_ip,
+		"additional_network_info": address_list
+	}
+	print(data)
+	return data
+
+
+def get_ip4_addresses():
 	ip_list = []
 	global secondary_ip
+	global ip_addr
 	secondary_ip = False
 	for interface in interfaces():
 		for addr_fam, link in ifaddresses(interface).items():
 			if addr_fam == AF_INET and 'docker' not in interface and 'lo' not in interface:
-				address = {'interface': interface, 'address': link[0]['addr'], 'netmask': link[0]['netmask']}
+				address = {'address': link[0]['addr'], 'netmask': link[0]['netmask']}
 				if interface == 'wlp6s0' or interface == 'eth0':
 					ip_addr = link[0]['addr']
-					ip_list.append({interface: ip_addr})
+					ip_list.append({interface: address})
 				if interface ==	'wlp6s0:1' or interface ==	'eth0:1':
-					secondary_ip = True
+					secondary_ip = link[0]['addr']
 	return ip_list
+
 
 def message(event, data):
 	sock.emit(event, data)
@@ -71,27 +86,30 @@ def await_reconnection_command():
 @sock.on('recover')
 def on_message(data):
 	print("Received recovery request:", data)
-	print("Recovering Node "+ str(data['recovery_node']) + "...")
-	print(TLOAD + "creating virtual IP address: " + data['ip'])
-	secondary_ip = data['ip']
-	print(TGREEN + "Success! Notifying Server...", ENDC)
-	return True, NODE_ID, secondary_ip
+	print("Recovering Node "+ str(data['disconnected_node']) + "...")
+	print(TLOAD + "creating virtual IP address: " + data['ip'], ENDC)
+	if not LOGINPASSWD:
+		print(TRED + "environment variable not Initialized. Unable to recover", ENDC)
+		print(TRED + "unable to recover node", ENDC)
+		message('update node', data)
+		return
+	os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig wlp6s0:1 192.168.0.150 netmask 255.255.255.0 up")
+	ip_addresses = get_ip4_addresses()
+	print(ip_addresses)
+	print(secondary_ip)
+	if secondary_ip:
+		print(TGREEN + "Success! Notifying Server...", ENDC)
+		updated_data = populate_server_info(ip_addresses)
+		message('update node', updated_data)
+	else:
+		print(TRED + "unable to recover node", ENDC)
+		message('update node', data)
+
 
 @sock.event
 def connect():
-	hostname = socket.gethostname()
-	address_list = ip4_addresses()
-	neighbors = get_neighbors(NODE_ID)
-	data = {
-		"mac": uuid.getnode(),
-		"pid": os.getpid(),
-		"system": hostname,
-		"NODE_ID": NODE_ID,
-		"neighbors": neighbors,
-		"primary_ip": ip_addr,
-		"secondary_ip": secondary_ip,
-		"additional_network_info": address_list
-	}
+	ip_addresses = get_ip4_addresses()
+	data = populate_server_info(ip_addresses)
 	message('join', data)
 	print("connected!")
 
