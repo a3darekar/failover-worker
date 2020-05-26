@@ -51,7 +51,6 @@ def populate_server_info(ip_addresses):
 		"secondary_ip": secondary_ip,
 		"additional_network_info": address_list
 	}
-	print(data)
 	return data
 
 
