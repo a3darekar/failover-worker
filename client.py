@@ -5,29 +5,41 @@ import time
 import uuid
 from netifaces import interfaces, ifaddresses, AF_INET
 
+from timeloop import Timeloop
+from datetime import timedelta
 
+tl = Timeloop()
 sock = socketio.Client()
-TRED =  '\033[31m' # Red Text
-TLOAD =  '\033[33m' # Red Text
+TGREEN = '\033[32m' # Green Text
+TRED = '\033[31m' # Red Text
+TLOAD = '\033[33m'
 ENDC = '\033[m'
 ip_addr = '127.0.0.1'
 secondary_ip = False
 
 # Node identity
-node_identity = int(os.environ.get('NODE_ID', False))
+NODE_ID = int(os.environ.get('NODE_ID', False))
 
-def get_neighbours(identity):
+
+@tl.job(interval=timedelta(seconds=2))
+def sample_job_every_2s():
+	if sock.connected:
+		message('ping', None)
+
+
+def get_neighbors(identity):
 	file = open('network_config.txt', 'r')
 	matrices = file.readlines()
-	items = matrices[node_identity].rstrip('\n').split(', ')
-	neighbours = [ True if item == "True" else item for item in items ]
-	neighbours = [ False if item == "False" else item for item in neighbours ]
-	print("Self ID: ", neighbours[0])
-	print("All possible neighbours are: ")
-	for neighbour in neighbours[1:]:
-		print(neighbour, end=' ')
+	items = matrices[NODE_ID].rstrip('\n').split(', ')
+	neighbors = [ True if item == "True" else item for item in items ]
+	neighbors = [ False if item == "False" else item for item in neighbors ]
+	print("Self ID: ", neighbors[0])
+	print("All possible neighbors are: ")
+	for neighbor in neighbors[1:]:
+		print(neighbor, end=' ')
 	print()
-	return neighbours
+	neighbors.pop(0)
+	return neighbors
 
 
 def ip4_addresses():
@@ -48,38 +60,41 @@ def ip4_addresses():
 def message(event, data):
 	sock.emit(event, data)
 
+
 def await_reconnection_command():
 	while True:
 		reconnect_request = input("attempt reconnection? (y|Y): \t")
 		if reconnect_request == 'Y' or 'y':
 			return True
 
-@sock.on('slack')
-def on_message(data):
-	print("Received message from server << ", data)
 
-
-@sock.on('slack')
+@sock.on('recover')
 def on_message(data):
-	print(data)
+	print("Received recovery request:", data)
+	print("Recovering Node "+ str(data['recovery_node']) + "...")
+	print(TLOAD + "creating virtual IP address: " + data['ip'])
+	secondary_ip = data['ip']
+	print(TGREEN + "Success! Notifying Server...", ENDC)
+	return True, NODE_ID, secondary_ip
 
 @sock.event
 def connect():
 	hostname = socket.gethostname()
 	address_list = ip4_addresses()
-	neighbours = get_neighbours(node_identity)
+	neighbors = get_neighbors(NODE_ID)
 	data = {
 		"mac": uuid.getnode(),
 		"pid": os.getpid(),
 		"system": hostname,
-		"node_identity": node_identity,
-		"neighbours": neighbours,
+		"NODE_ID": NODE_ID,
+		"neighbors": neighbors,
 		"primary_ip": ip_addr,
 		"secondary_ip": secondary_ip,
 		"additional_network_info": address_list
 	}
 	message('join', data)
 	print("connected!")
+
 
 @sock.event
 def connect_error():
@@ -89,16 +104,18 @@ def connect_error():
 
 @sock.event
 def disconnect():
+	tl.stop()
 	print("I'm disconnected!")
 
 def reconnect():
 	time.sleep(2)
 	sock.connect('http://localhost:5000')
+	tl.start()
 
 if __name__ == '__main__':
 	try:
 		print(TLOAD+"initializing Node identity, gathering IP addresses and connecting to Failover Server", ENDC)
-		if node_identity is False:
+		if NODE_ID is False:
 			print(TRED+ "ERROR! Could not load Node identity", ENDC)
 			print("Initialize the Node identity with environment variable 'NODE_ID'. Look at README.txt for more info.")
 			exit()
@@ -106,12 +123,12 @@ if __name__ == '__main__':
 			if not sock.connected:
 				reconnect()
 			else:
-				ping = input("Enter message for server: \t")
-				if ping != 'disconnect':
-					message('convo', ping)
-				else:
+				ping = input("type in disconnect to terminate the session: \t")
+				if ping == 'disconnect':
 					sock.disconnect()
 					await_reconnection_command()
 	except KeyboardInterrupt:
-		print(TRED + "KeyboardInterrupt occured Disconnecting!", ENDC)
+		tl.stop()
+		print(TLOAD + "KeyboardInterrupt occured.")
+		print(TRED + "Disconnecting!", ENDC)
 		exit()
