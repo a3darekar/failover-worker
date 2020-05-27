@@ -13,7 +13,9 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio aperiam par
 	1. Download Installer from [here](https://www.python.org/downloads/windows/) and Install python 3 (preferably version 3.7 or higher)
 	2. Follow [this guide](https://www.howtogeek.com/197947/how-to-install-python-on-windows/) in case of any issues. 
 	3. Check if installation is successful by running given command in command prompt.
-		'python3 –version'
+
+		$ python3 –version
+	
 	4. If installed properly, The output should read installed version of python.
 	5. **Note:** Run the command prompt as administer for executing this program.
 
@@ -28,11 +30,11 @@ Windows Installer for Python include pip by default.
 Debian and most other linux distributions include a [python-pip](https://packages.debian.org/stable/python-pip) package.
 To verify the version, use 
 	
-	'py -m pip --version'
+	$ py -m pip --version
 	
 You can make sure that pip is up-to-date by running:
 
-	'py -m pip install --upgrade pip' 
+	$ py -m pip install --upgrade pip'
 
 ### Install virtualenv using pip
 
@@ -40,11 +42,11 @@ You can make sure that pip is up-to-date by running:
 
 On Windows:
 
-	'py -m pip install --user virtualenv'
+	$ py -m pip install --user virtualenv
 
 On macOS and Linux:
 
-	'python3 -m pip install --user virtualenv'
+	$ python3 -m pip install --user virtualenv
 
 ### Clone the repository:
 
@@ -58,15 +60,15 @@ To create a virtual environment, go to your project’s directory and run venv. 
 
 On macOS and Linux:
 
-	'python3 -m venv env'
+	$ python3 -m venv env
 
 or
 
-	'python -m virtualenv env'
+	$ python -m virtualenv env
 
 On Windows:
 
-	'py -m venv env'
+	$ py -m venv env
 
 The second argument is the location to create the virtual environment. Generally, you can just create this in your project and call it env.
 
@@ -80,26 +82,26 @@ After entering
 
 On macOS and Linux:
 
-	'source env/bin/activate'
+	$ source env/bin/activate
 
 On Windows:
 
-	'.\env\Scripts\activate'
+	$ .\env\Scripts\activate
 
 ### Leaving Virtual Environment
 
 To leave virtual environment, simply run:
-	'deactivate'
+	$ deactivate
 
 ### Installing packages
 
 Once you activate virtual environment, you can proceed to install packages. For example, to install requests library, run:
 
-	'pip install requests'
+	$ pip install requests
 
 or for specific version:
 
-	'pip install requests==2.18.4'
+	$ pip install requests==2.18.4
 
 As we already have all requirements specified in the requirements.txt file, we will skip this part and install requirements from 'requirements.txt'
 
@@ -107,7 +109,7 @@ As we already have all requirements specified in the requirements.txt file, we w
 
 To install requrirements from requirements file, run:
 
-	'pip install -r requirements.txt'
+	$ pip install -r requirements.txt
 
 ### Setting Environment variables as per requiremnts:
 
@@ -129,15 +131,15 @@ After successfully installing all requirements, run the application:
 
 On Windows:
 
-	'py client.py'
+	$ py client.py
 
 On MacOS and Linux:
 
-	'python client.py'
+	$ python client.py
 
 OR 
 
-	'python3 client.py'
+	$ python3 client.py
 
 ## Logging functionality:
 
@@ -157,4 +159,4 @@ This program generates 2 distinct logs.
 
 Format followed by the logger is:
 
-	'[TIMESTAMP] : [LOG LEVEL] - [Message]'
+	$ [TIMESTAMP] : [LOG LEVEL] - [Message]
