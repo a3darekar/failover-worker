@@ -158,6 +158,6 @@ This program generates 2 distinct logs.
 	4. ERROR	Due to a more serious problem, the software has not been able to perform some function.
 	5. CRITICAL	A serious error, indicating that the program itself may be unable to continue running.
 
-Format followed by the logger is:
+### Format followed by the logger is:
 
-	"[TIMESTAMP] : [LOG LEVEL] - [Message]"
+	'[TIMESTAMP] - [LOGGERNAME] - [LOG LEVEL] - [Message]'
