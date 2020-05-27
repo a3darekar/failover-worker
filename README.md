@@ -114,6 +114,10 @@
 	- For Windows:
 		Follow the environment variables part of this [guide](https://www.howtogeek.com/197947/how-to-install-python-on-windows/).
 
+### Update Server url:
+
+	Replace URL "http://localhost:5000" with server url in reconnect method in client.py
+
 ### Execute Application script:
 	
 	After successfully installing all requirements, run the application:
