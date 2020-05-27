@@ -10,7 +10,7 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio aperiam par
 ### Install python
 
 - For Windows:
-	1. Download Installer for python 3 from [here](https://www.python.org/downloads/windows/) and Install python 3 (preferably version 3.7 or higher)
+	1. Download Installer from [here](https://www.python.org/downloads/windows/) and Install python 3 (preferably version 3.7 or higher)
 	2. Follow [this guide](https://www.howtogeek.com/197947/how-to-install-python-on-windows/) in case of any issues. 
 	3. Check if installation is successful by running given command in command prompt.
 		'python3 –version'
@@ -24,10 +24,14 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio aperiam par
 
 pip is the reference Python package manager. It’s used to install and update packages. You’ll need to make sure you have the latest version of pip installed.
 
-- For Windows:
-	1. Windows Installer for Python include pip by default. To verify the version, use 
+Windows Installer for Python include pip by default. 
+Debian and most other linux distributions include a [python-pip](https://packages.debian.org/stable/python-pip) package.
+To verify the version, use 
+	
 	'py -m pip --version'
-	2. You can make sure that pip is up-to-date by running:
+	
+You can make sure that pip is up-to-date by running:
+
 	'py -m pip install --upgrade pip' 
 
 ### Install virtualenv using pip
