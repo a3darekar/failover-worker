@@ -11,6 +11,8 @@ NODE_ID = int(os.environ.get('NODE_ID', False))
 secondary_ip = False
 primary_ip = None
 
+logging.getLogger('timeloop').setLevel(logging.ERROR)
+
 logger = logging.getLogger('operations')
 fileHandler = logging.FileHandler('operations.log')
 formatter = logging.Formatter('[%(asctime)s] - [%(name)s] - [%(levelname)s] - %(message)s')
@@ -22,7 +24,7 @@ pingLogger = logging.getLogger('ping')
 pingFileHandler = logging.FileHandler('ping.log')
 pingFileHandler.setFormatter(formatter)
 pingLogger.addHandler(pingFileHandler)
-pingLogger.setLevel(logging.DEBUG)
+pingLogger.setLevel(logging.INFO)
 
 ch = logging.StreamHandler() 			# Console Log Handler
 ch.setLevel(logging.DEBUG)
@@ -36,7 +38,7 @@ def pingLeat():
 	if sock.connected:
 		now = datetime.now()
 		pingLogger = logging.getLogger('ping')
-		pingLogger.debug("Sent alive ping as node %s", NODE_ID)
+		pingLogger.info("Sent alive ping as node %s", NODE_ID)
 		message('ping', now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-2])
 
 
