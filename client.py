@@ -36,7 +36,7 @@ def pingLeat():
 	if sock.connected:
 		now = datetime.now()
 		pingLogger = logging.getLogger('ping')
-		pingLogger.debug("Sent alive ping")
+		pingLogger.debug("Sent alive ping as node %s", NODE_ID)
 		message('ping', now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-2])
 
 
