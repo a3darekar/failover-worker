@@ -160,4 +160,4 @@ This program generates 2 distinct logs.
 
 ### Format followed by the logger is:
 
-	'[TIMESTAMP] - [LOGGERNAME] - [LOG LEVEL] - [Message]'
+	'[TIMESTAMP] [LOGGERNAME] [LOG LEVEL] - [Message]'
