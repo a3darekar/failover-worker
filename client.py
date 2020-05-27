@@ -22,7 +22,7 @@ primary_ip = None
 def ping_beat():
 	if sock.connected:
 		now = datetime.now()
-		message('ping', now.strftime("%Y-%m-%d %H:%M:%S %z"))
+		message('ping', now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-2])
 
 
 def get_neighbors(identity):
