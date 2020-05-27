@@ -3,7 +3,7 @@ import time, datetime, os, socket, uuid
 from netifaces import interfaces, ifaddresses, AF_INET
 
 from timeloop import Timeloop
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 LOGINPASSWD = os.environ.get('PASSWORD', False)
 NODE_ID = int(os.environ.get('NODE_ID', False))
@@ -18,10 +18,11 @@ secondary_ip = False
 primary_ip = None
 
 
-# @tl.job(interval=timedelta(seconds=2))
-# def ping_beat():
-# 	if sock.connected:
-# 		message('ping', None)
+@tl.job(interval=timedelta(seconds=2))
+def ping_beat():
+	if sock.connected:
+		now = datetime.now()
+		message('ping', now.strftime("%Y-%m-%d %H:%M:%S %z"))
 
 
 def get_neighbors(identity):
