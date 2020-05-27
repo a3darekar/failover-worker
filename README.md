@@ -138,7 +138,7 @@ On MacOS and Linux:
 
 	$ python client.py
 
-OR 
+	or
 
 	$ python3 client.py
 
@@ -160,4 +160,4 @@ This program generates 2 distinct logs.
 
 Format followed by the logger is:
 
-	$ [TIMESTAMP] : [LOG LEVEL] - [Message]
+	"[TIMESTAMP] : [LOG LEVEL] - [Message]"
