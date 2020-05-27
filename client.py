@@ -88,12 +88,18 @@ def on_message(data):
 	print("Received recovery request:", data)
 	print("Recovering Node "+ str(data['disconnected_node']) + "...")
 	print(TLOAD + "creating virtual IP address: " + data['ip'], ENDC)
-	if not LOGINPASSWD:
-		print(TRED + "environment variable not Initialized. Unable to recover", ENDC)
-		print(TRED + "unable to recover node", ENDC)
+	if sys.platform.startswith('win'):
+		os.system("ifconfig wlp6s0:1 192.168.0.150 netmask 255.255.255.0 up")
+	elif sys.platform.startswith('lin'):
+		if not LOGINPASSWD:
+			print(TRED + "Environment variable not Initialized. Unable to recover", ENDC)
+			message('update node', data)
+			return
+		os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig wlp6s0:1 192.168.0.150 netmask 255.255.255.0 up")
+	else:
+		print(TRED + "Unable to determine the System os. Unable to recover", ENDC)
 		message('update node', data)
 		return
-	os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig wlp6s0:1 192.168.0.150 netmask 255.255.255.0 up")
 	ip_addresses = get_ip4_addresses()
 	print(ip_addresses)
 	print(secondary_ip)
