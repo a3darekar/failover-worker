@@ -151,7 +151,6 @@ def on_message(data):
 		updated_data.update({'restore_node': data['restore_node']})
 		updated_data.update({'status': True})
 		message('restore node', updated_data)
-		print(updated_data)
 	else:
 		logger.warning("unable to restore IP")
 		data.update({'status': False})
