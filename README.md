@@ -10,18 +10,23 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio aperiam par
 
 ### Install python
 
-- For Windows:
-	1. Download Installer from [here](https://www.python.org/downloads/windows/) and Install python 3 (preferably version 3.7 or higher)
-	2. Follow [this guide](https://www.howtogeek.com/197947/how-to-install-python-on-windows/) in case of any issues. 
-	3. Check if installation is successful by running given command in command prompt.
+For Windows:
 
-		$ python3 –version
+1. Download Installer from [here](https://www.python.org/downloads/windows/) and Install python 3 (preferably version 3.7 or higher)
+
+2. Follow [this guide](https://www.howtogeek.com/197947/how-to-install-python-on-windows/) in case of any issues. 
+
+3. Check if installation is successful by running given command in command prompt.
 	
-	4. If installed properly, The output should read installed version of python.
-	5. **Note:** Run the command prompt as administer for executing this program.
+	$ python3 –version
+	
+4. If installed properly, The output should read installed version of python.
 
-- For Linux:
-	1. Refer to [this guide](https://docs.python-guide.org/starting/install3/linux/) to install and verify python installation.
+5. **Note:** Run the command prompt as administer for executing this program.
+
+For Linux:
+
+1. Refer to [this guide](https://docs.python-guide.org/starting/install3/linux/) to install and verify python installation.
 
 ### Install pip (package installer for python)
 
