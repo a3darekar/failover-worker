@@ -51,9 +51,7 @@ def get_neighbors(identity):
 	items = matrices[NODE_ID].rstrip('\n').split(', ')
 	neighbors = [ True if item == "True" else item for item in items ]
 	neighbors = [ False if item == "False" else item for item in neighbors ]
-	logger.info("Self ID: %s", NODE_ID)
 	neighbors.pop(0)
-	logger.info("All possible neighbors are: %s", neighbors)
 	return neighbors
 
 
@@ -113,7 +111,7 @@ def on_message(data):
 			logger.warning("Environment variable not Initialized. Unable to recover")
 			message('update node', data)
 			return
-		os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig " + ip_interface + " 192.168.0.150 netmask" + data['netmask'] + " up")
+		os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig " + ip_interface + " 192.168.0.150 netmask " + data['netmask'] + " up")
 	else:
 		logger.warning("Unable to determine the System os. Unable to recover")
 		message('update node', data)
@@ -123,7 +121,6 @@ def on_message(data):
 		logger.info("Successfully created secondary IP as %s Notifying Server...", secondary_ip)
 		updated_data = populate_server_info()
 		updated_data.update({'disconnected_node': data['disconnected_node']})
-		print(updated_data)
 		message('update node', updated_data)
 	else:
 		logger.warning("unable to recover node")
@@ -132,31 +129,33 @@ def on_message(data):
 
 @sock.on('restore')
 def on_message(data):
-	logger.info("Received restoration request:", data)
-	logger.info("Restoring Node "+ str(data['restore_node']) + "...")
-	logger.info("Deleting virtual IP address: " + data['ip'])
-	# if sys.platform.startswith('win'):
-	# 	os.system("ifconfig wlp6s0:1 " + data['ip'] + " up")
-	# elif sys.platform.startswith('lin'):
-	# 	if not LOGINPASSWD:
-	# 		logger.warning("Environment variable not Initialized. Unable to recover")
-	# 		message('update node', data)
-	# 		return
-	# 	os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig wlp6s0:1 192.168.0.150 up")
-	# else:
-	# 	logger.warning("Unable to determine the System os. Unable to recover")
-	# 	message('update node', data)
-	# 	return
-	# ip_addresses = get_ip4_addresses()
-	# if secondary_ip:
-	# 	logger.info("Successfully created secondary IP as %s Notifying Server...", secondary_ip)
-	# 	updated_data = populate_server_info(ip_addresses)
-	# 	updated_data.update({'disconnected_node': data['disconnected_node']})
-	# 	print(updated_data)
-	# 	message('update node', updated_data)
-	# else:
-	# 	logger.warning("unable to recover node")
-	# 	message('update node', data)
+	logger.info("Received restoration request. Restoring Node "+ str(data['restore_node']) + "...")
+	logger.info("Deleting virtual IP address: " + secondary_ip)
+	if secondary_ip and secondary_netmask:
+		if sys.platform.startswith('win'):
+			os.system("ifconfig " + ip_interface + " " + secondary_ip + "netmask " + secondary_netmask + " down")
+		elif sys.platform.startswith('lin'):
+			if not LOGINPASSWD:
+				logger.warning("Environment variable not Initialized. Unable to restore IP.")
+				message('restore node', data)
+				return
+			os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig " + ip_interface + " " + secondary_ip + " netmask " + secondary_netmask + " down")
+		else:
+			logger.warning("Unable to determine the System os. Unable to restore IP")
+			message('restore node', data)
+			return
+	get_ip4_addresses()
+	if not secondary_ip:
+		logger.info("Successfully removed secondary IP. Notifying Server...")
+		updated_data = populate_server_info()
+		updated_data.update({'restore_node': data['restore_node']})
+		updated_data.update({'status': True})
+		message('restore node', updated_data)
+		print(updated_data)
+	else:
+		logger.warning("unable to restore IP")
+		data.update({'status': False})
+		message('restore node', data)
 
 
 @sock.event
