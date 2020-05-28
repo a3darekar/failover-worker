@@ -82,6 +82,7 @@ def get_ip4_addresses():
 					ip_addr = link[0]['addr']
 					ip_list.append({interface: address})
 				if interface ==	'wlp6s0:1' or interface ==	'eth0:1':
+					ip_list.append({interface: address})
 					secondary_ip = link[0]['addr']
 	return ip_list
 
@@ -115,10 +116,8 @@ def on_message(data):
 		message('update node', data)
 		return
 	ip_addresses = get_ip4_addresses()
-	logger.info(ip_addresses)
-	logger.info(secondary_ip)
 	if secondary_ip:
-		logger.info("Success! Notifying Server...")
+		logger.info("Successfully created secondary IP as %s Notifying Server...", secondary_ip)
 		updated_data = populate_server_info(ip_addresses)
 		message('update node', updated_data)
 	else:
