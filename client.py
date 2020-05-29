@@ -1,7 +1,7 @@
 import socketio, time, datetime, os, socket, uuid, logging, sys
 from netifaces import interfaces, ifaddresses, AF_INET
 
-from scapy import get_windows_if_list
+from scapy.all import *
 
 from timeloop import Timeloop
 from datetime import timedelta, datetime
