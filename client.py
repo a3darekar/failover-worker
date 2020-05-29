@@ -80,13 +80,22 @@ def get_ip4_addresses():
 	for interface in interfaces():
 		for addr_fam, link in ifaddresses(interface).items():
 			if addr_fam == AF_INET and 'docker' not in interface and 'lo' not in interface:
-				if interface == 'wlp6s0' or interface == 'eth0':
-					primary_ip = link[0]['addr']
-					primary_netmask = link[0]['netmask']
-					ip_interface = interface + ':1'
-				if interface ==	'wlp6s0:1' or interface ==	'eth0:1':
-					secondary_ip = link[0]['addr']
-					secondary_netmask = link[0]['netmask']
+				if sys.platform.startswith('win'):
+					if link[0]['addr'] != '127.0.0.1':
+						primary_ip = link[0]['addr']
+						primary_netmask = link[0]['netmask']
+						ip_interface = interface + ':1'
+					# if interface ==	'wlp6s0:1' or interface ==	'eth0:1':
+					# 	secondary_ip = link[0]['addr']
+					# 	secondary_netmask = link[0]['netmask']
+				elif sys.platform.startswith('lin'):
+					if interface == 'wlp6s0' or interface == 'eth0':
+						primary_ip = link[0]['addr']
+						primary_netmask = link[0]['netmask']
+						ip_interface = interface + ':1'
+					if interface ==	'wlp6s0:1' or interface ==	'eth0:1':
+						secondary_ip = link[0]['addr']
+						secondary_netmask = link[0]['netmask']
 
 
 def message(event, data):
@@ -105,7 +114,7 @@ def on_message(data):
 	logger.info("Received recovery request. Recovering node "+ str(data['disconnected_node']) + "...")
 	logger.info("creating virtual IP address: " + data['ip'])
 	if sys.platform.startswith('win'):
-		os.system("netsh interface ipv4 add address 'Secondary Connection' " + data['ip'] + " " + data['netmask'])
+		os.system("netsh interface ipv4 add address 'Ethernet' " + data['ip'] + " " + data['netmask'])
 	elif sys.platform.startswith('lin'):
 		if not LOGINPASSWD:
 			logger.warning("Environment variable not Initialized. Unable to recover")
@@ -133,7 +142,7 @@ def on_message(data):
 	logger.info("Deleting virtual IP address: " + secondary_ip)
 	if secondary_ip and secondary_netmask:
 		if sys.platform.startswith('win'):
-			os.system("netsh interface ipv4 delete address 'Secondary Connection'")
+			os.system("netsh interface ipv4 delete address 'Ethernet' "
 		elif sys.platform.startswith('lin'):
 			if not LOGINPASSWD:
 				logger.warning("Environment variable not Initialized. Unable to restore IP.")
