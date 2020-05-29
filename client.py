@@ -1,6 +1,8 @@
 import socketio, time, datetime, os, socket, uuid, logging, sys
 from netifaces import interfaces, ifaddresses, AF_INET
 
+from scapy import get_windows_if_list
+
 from timeloop import Timeloop
 from datetime import timedelta, datetime
 
@@ -76,6 +78,7 @@ def get_ip4_addresses():
 	global ip_interface
 	global primary_netmask
 	global secondary_netmask
+	windodws_ip_configs = get_windows_if_list()
 	secondary_ip = None
 	for interface in interfaces():
 		for addr_fam, link in ifaddresses(interface).items():
@@ -83,6 +86,10 @@ def get_ip4_addresses():
 			if addr_fam == AF_INET and 'docker' not in interface and 'lo' not in interface:
 				if sys.platform.startswith('win'):
 					if link[0]['addr'] != '127.0.0.1':
+						for config in windodws_ip_configs:
+							if interface == config['guid']:
+								ip_interface = config['name']
+						print(interface, ip_interface)
 						primary_ip = link[0]['addr']
 						primary_netmask = link[0]['netmask']
 						ip_interface = interface + ':1'
