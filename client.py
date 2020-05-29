@@ -142,7 +142,7 @@ def on_message(data):
 	logger.info("Deleting virtual IP address: " + secondary_ip)
 	if secondary_ip and secondary_netmask:
 		if sys.platform.startswith('win'):
-			os.system("netsh interface ipv4 delete address 'Ethernet' "
+			os.system("netsh interface ipv4 delete address 'Ethernet' " + secondary_ip + " " + secondary_netmask)
 		elif sys.platform.startswith('lin'):
 			if not LOGINPASSWD:
 				logger.warning("Environment variable not Initialized. Unable to restore IP.")
