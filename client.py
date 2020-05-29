@@ -105,13 +105,13 @@ def on_message(data):
 	logger.info("Received recovery request. Recovering node "+ str(data['disconnected_node']) + "...")
 	logger.info("creating virtual IP address: " + data['ip'])
 	if sys.platform.startswith('win'):
-		os.system("ipconfig " + ip_interface + data['ip'] + "netmask " + data['netmask'] + " up")
+		os.system("ipconfig " + ip_interface + data['ip'] + " netmask " + data['netmask'] + " up")
 	elif sys.platform.startswith('lin'):
 		if not LOGINPASSWD:
 			logger.warning("Environment variable not Initialized. Unable to recover")
 			message('update node', data)
 			return
-		os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig " + ip_interface + " 192.168.0.150 netmask " + data['netmask'] + " up")
+		os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig " + ip_interface + " " + data['ip'] + " netmask " + data['netmask'] + " up")
 	else:
 		logger.warning("Unable to determine the System os. Unable to recover")
 		message('update node', data)
@@ -133,7 +133,7 @@ def on_message(data):
 	logger.info("Deleting virtual IP address: " + secondary_ip)
 	if secondary_ip and secondary_netmask:
 		if sys.platform.startswith('win'):
-			os.system("ipconfig " + ip_interface + " " + secondary_ip + "netmask " + secondary_netmask + " down")
+			os.system("ipconfig " + ip_interface + " " + secondary_ip + " netmask " + secondary_netmask + " down")
 		elif sys.platform.startswith('lin'):
 			if not LOGINPASSWD:
 				logger.warning("Environment variable not Initialized. Unable to restore IP.")
