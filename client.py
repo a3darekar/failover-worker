@@ -79,6 +79,7 @@ def get_ip4_addresses():
 	secondary_ip = None
 	for interface in interfaces():
 		for addr_fam, link in ifaddresses(interface).items():
+			print(interface)
 			if addr_fam == AF_INET and 'docker' not in interface and 'lo' not in interface:
 				if sys.platform.startswith('win'):
 					if link[0]['addr'] != '127.0.0.1':
