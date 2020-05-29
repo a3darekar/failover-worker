@@ -62,7 +62,7 @@ def populate_server_info():
 		"system": hostname,
 		"NODE_ID": NODE_ID,
 		"neighbors": neighbors,
-		"primary_ip": ip_addr,
+		"primary_ip": primary_ip,
 		"primary_netmask": primary_netmask,
 		"secondary_ip": secondary_ip,
 		"secondary_netmask": secondary_netmask,
@@ -72,7 +72,7 @@ def populate_server_info():
 
 def get_ip4_addresses():
 	global secondary_ip
-	global ip_addr
+	global primary_ip
 	global ip_interface
 	global primary_netmask
 	global secondary_netmask
@@ -81,7 +81,7 @@ def get_ip4_addresses():
 		for addr_fam, link in ifaddresses(interface).items():
 			if addr_fam == AF_INET and 'docker' not in interface and 'lo' not in interface:
 				if interface == 'wlp6s0' or interface == 'eth0':
-					ip_addr = link[0]['addr']
+					primary_ip = link[0]['addr']
 					primary_netmask = link[0]['netmask']
 					ip_interface = interface + ':1'
 				if interface ==	'wlp6s0:1' or interface ==	'eth0:1':
@@ -105,7 +105,7 @@ def on_message(data):
 	logger.info("Received recovery request. Recovering node "+ str(data['disconnected_node']) + "...")
 	logger.info("creating virtual IP address: " + data['ip'])
 	if sys.platform.startswith('win'):
-		os.system("ipconfig " + ip_interface + data['ip'] + " netmask " + data['netmask'] + " up")
+		os.system("netsh interface ipv4 add address 'Secondary Connection' " + data['ip'] + " " + data['netmask'])
 	elif sys.platform.startswith('lin'):
 		if not LOGINPASSWD:
 			logger.warning("Environment variable not Initialized. Unable to recover")
@@ -133,7 +133,7 @@ def on_message(data):
 	logger.info("Deleting virtual IP address: " + secondary_ip)
 	if secondary_ip and secondary_netmask:
 		if sys.platform.startswith('win'):
-			os.system("ipconfig " + ip_interface + " " + secondary_ip + " netmask " + secondary_netmask + " down")
+			os.system("netsh interface ipv4 delete address 'Secondary Connection'")
 		elif sys.platform.startswith('lin'):
 			if not LOGINPASSWD:
 				logger.warning("Environment variable not Initialized. Unable to restore IP.")
