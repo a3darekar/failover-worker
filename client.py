@@ -122,7 +122,7 @@ def on_message(data):
 	logger.info("Received recovery request. Recovering node "+ str(data['disconnected_node']) + "...")
 	logger.info("creating virtual IP address: " + data['ip'])
 	if sys.platform.startswith('win'):
-		os.system("netsh interface ipv4 add address 'Ethernet' " + data['ip'] + " " + data['netmask'])
+		os.system("netsh interface ipv4 add address '" + ip_interface + "'' " + data['ip'] + " " + data['netmask'])
 	elif sys.platform.startswith('lin'):
 		if not LOGINPASSWD:
 			logger.warning("Environment variable not Initialized. Unable to recover")
@@ -150,7 +150,7 @@ def on_message(data):
 	logger.info("Deleting virtual IP address: " + secondary_ip)
 	if secondary_ip and secondary_netmask:
 		if sys.platform.startswith('win'):
-			os.system("netsh interface ipv4 delete address 'Ethernet' " + secondary_ip + " " + secondary_netmask)
+			os.system("netsh interface ipv4 delete address '" + ip_interface + "'' " + secondary_ip + " " + secondary_netmask)
 		elif sys.platform.startswith('lin'):
 			if not LOGINPASSWD:
 				logger.warning("Environment variable not Initialized. Unable to restore IP.")
