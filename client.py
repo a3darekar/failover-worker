@@ -80,6 +80,7 @@ def get_ip4_addresses():
 	global primary_netmask
 	global secondary_netmask
 	secondary_ip = None
+	secondary_netmask = None
 	for interface in interfaces():
 		for addr_fam, link in ifaddresses(interface).items():
 			if addr_fam == AF_INET and 'docker' not in interface and 'lo' not in interface:
