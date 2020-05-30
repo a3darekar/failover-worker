@@ -89,7 +89,6 @@ def get_ip4_addresses():
 						for config in windodws_ip_configs:
 							if interface == config['guid']:
 								ip_interface = config['name']
-								print(interface + " " + config['guid'] + " " + ip_interface)
 						primary_ip = link[0]['addr']
 						primary_netmask = link[0]['netmask']
 					try:
