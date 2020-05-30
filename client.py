@@ -10,9 +10,10 @@ tl = Timeloop()
 sock = socketio.Client()
 LOGINPASSWD = os.environ.get('PASSWORD', False)
 NODE_ID = int(os.environ.get('NODE_ID', False))
-secondary_ip = None
+
 ip_interface = None
 primary_ip = None
+secondary_ip = None
 primary_netmask = None
 secondary_netmask = None
 
@@ -78,24 +79,24 @@ def get_ip4_addresses():
 	global ip_interface
 	global primary_netmask
 	global secondary_netmask
-	windodws_ip_configs = get_windows_if_list()
 	secondary_ip = None
 	for interface in interfaces():
 		for addr_fam, link in ifaddresses(interface).items():
-			print(interface)
 			if addr_fam == AF_INET and 'docker' not in interface and 'lo' not in interface:
 				if sys.platform.startswith('win'):
+					windodws_ip_configs = get_windows_if_list()
 					if link[0]['addr'] != '127.0.0.1':
 						for config in windodws_ip_configs:
 							if interface == config['guid']:
 								ip_interface = config['name']
-						print(interface, ip_interface)
+								print(interface + " " + config['guid'] + " " + ip_interface)
 						primary_ip = link[0]['addr']
 						primary_netmask = link[0]['netmask']
-						ip_interface = interface + ':1'
-					# if interface ==	'wlp6s0:1' or interface ==	'eth0:1':
-					# 	secondary_ip = link[0]['addr']
-					# 	secondary_netmask = link[0]['netmask']
+					try:
+						secondary_ip = link[1]['addr']
+						secondary_netmask = link[1]['netmask']
+					except IndexError:
+						pass
 				elif sys.platform.startswith('lin'):
 					if interface == 'wlp6s0' or interface == 'eth0':
 						primary_ip = link[0]['addr']
@@ -122,7 +123,7 @@ def on_message(data):
 	logger.info("Received recovery request. Recovering node "+ str(data['disconnected_node']) + "...")
 	logger.info("creating virtual IP address: " + data['ip'])
 	if sys.platform.startswith('win'):
-		os.system("netsh interface ipv4 add address '" + ip_interface + "'' " + data['ip'] + " " + data['netmask'])
+		os.system("netsh interface ipv4 add address " + ip_interface + " " + data['ip'] + " " + data['netmask'])
 	elif sys.platform.startswith('lin'):
 		if not LOGINPASSWD:
 			logger.warning("Environment variable not Initialized. Unable to recover")
@@ -150,7 +151,7 @@ def on_message(data):
 	logger.info("Deleting virtual IP address: " + secondary_ip)
 	if secondary_ip and secondary_netmask:
 		if sys.platform.startswith('win'):
-			os.system("netsh interface ipv4 delete address '" + ip_interface + "'' " + secondary_ip + " " + secondary_netmask)
+			os.system("netsh interface ipv4 delete address " + ip_interface + " " + secondary_ip + " " + secondary_netmask)
 		elif sys.platform.startswith('lin'):
 			if not LOGINPASSWD:
 				logger.warning("Environment variable not Initialized. Unable to restore IP.")
