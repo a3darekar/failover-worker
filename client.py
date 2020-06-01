@@ -123,13 +123,17 @@ def on_message(data):
 	logger.info("Received recovery request. Recovering node "+ str(data['disconnected_node']) + "...")
 	logger.info("creating virtual IP address: " + data['ip'])
 	if sys.platform.startswith('win'):
-		os.system('netsh interface ipv4 add address "' + ip_interface + '" ' + data['ip'] + ' ' + data['netmask'])
+		logger.critical('netsh interface ipv4 add address "' + ip_interface + '" ' + data['ip'] + ' ' + data['netmask'])
+		cmd_result = os.system('netsh interface ipv4 add address "' + ip_interface + '" ' + data['ip'] + ' ' + data['netmask'])
+		logger.critical("Success") if cmd_result == 0 else logger.critical("Error")
 	elif sys.platform.startswith('lin'):
 		if not LOGINPASSWD:
 			logger.warning("Environment variable not Initialized. Unable to recover")
 			message('update node', data)
 			return
-		os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig " + ip_interface + " " + data['ip'] + " netmask " + data['netmask'] + " up")
+			logger.critical("echo " + LOGINPASSWD + " | sudo -S ifconfig " + ip_interface + " " + data['ip'] + " netmask " + data['netmask'] + " up")
+		cmd_result = os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig " + ip_interface + " " + data['ip'] + " netmask " + data['netmask'] + " up")
+		logger.critical("Success") if cmd_result == 0 else logger.critical("Error")
 	else:
 		logger.warning("Unable to determine the System os. Unable to recover")
 		message('update node', data)
@@ -151,13 +155,17 @@ def on_message(data):
 	logger.info("Deleting virtual IP address: " + secondary_ip)
 	if secondary_ip and secondary_netmask:
 		if sys.platform.startswith('win'):
-			os.system('netsh interface ipv4 delete address "' + ip_interface + '"" ' + secondary_ip + ' ' + secondary_netmask)
+			logger.critical('netsh interface ipv4 delete address "' + ip_interface + '"" ' + secondary_ip + ' ' + secondary_netmask)
+			cmd_result = os.system('netsh interface ipv4 delete address "' + ip_interface + '"" ' + secondary_ip + ' ' + secondary_netmask)
+			logger.critical("Success") if cmd_result == 0 else logger.critical("Error")
 		elif sys.platform.startswith('lin'):
 			if not LOGINPASSWD:
 				logger.warning("Environment variable not Initialized. Unable to restore IP.")
 				message('restore node', data)
 				return
-			os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig " + ip_interface + " " + secondary_ip + " netmask " + secondary_netmask + " down")
+				logger.critical("echo " + LOGINPASSWD + " | sudo -S ifconfig " + ip_interface + " " + secondary_ip + " netmask " + secondary_netmask + " down")
+			cmd_result = os.system("echo " + LOGINPASSWD + " | sudo -S ifconfig " + ip_interface + " " + secondary_ip + " netmask " + secondary_netmask + " down")
+			logger.critical("Success") if cmd_result == 0 else logger.critical("Error")
 		else:
 			logger.warning("Unable to determine the System os. Unable to restore IP")
 			message('restore node', data)
