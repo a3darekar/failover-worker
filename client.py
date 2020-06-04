@@ -192,18 +192,22 @@ def connect():
 
 
 @sock.event
-def connect_error():
-	logger.critical("The connection failed!")
-	logger.warning("trying to recconnect.")
-	await_reconnection_command()
+def connect_error(message):
+	logger.debug(message + " Trying to recconnect in 5 seconds")
+	time.sleep(5)
+	reconnect()
 
 @sock.event
 def disconnect():
 	logger.warning("I'm disconnected!")
 
 def reconnect():
-	time.sleep(2)
-	sock.connect('http://localhost:5000')
+	logger.debug("Attempting Connection")
+	try:
+		time.sleep(2)
+		sock.connect('http://localhost:5000')
+	except Exception as e:
+		print(e)
 
 if __name__ == '__main__':
 	tl.start()
