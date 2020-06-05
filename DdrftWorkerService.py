@@ -2,6 +2,8 @@ from DaemonWin32Service import DaemonWin32Service
 
 from client import *
 
+logger = logging.getLogger('operations')
+
 class DdrftWorkerService(DaemonWin32Service):
 
 	_svc_name_ = 'ddrft_worker'
@@ -19,8 +21,6 @@ class DdrftWorkerService(DaemonWin32Service):
 
 	def main(self):
 		tl.start()
-		logger = logging.getLogger('operations')
-		pingLogger = logging.getLogger('ping')
 		logger.critical("-------------------------------Program Execution Started-------------------------------")
 		try:
 			logger.info("initializing Node identity, gathering IP addresses and connecting to Failover Server")
@@ -51,6 +51,6 @@ class DdrftWorkerService(DaemonWin32Service):
 
 if __name__ == '__main__':
 
-    print("Installing {} Service".format(LoggerService.__name__))
+    print("Installing {} Service".format(logger.__name__))
 
-    LoggerService.parse_command_line()
+    logger.parse_command_line()
