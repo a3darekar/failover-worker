@@ -29,8 +29,8 @@ class DdrftWorkerService(DaemonWin32Service):
 				logger.warning("Initialize the Node identity with environment variable 'NODE_ID'. Look at README.txt for more info.")
 				logger.critical("-----------------------------------Program terminated-----------------------------------")
 				tl.stop()
-                print("exiting windows service {}".format(str(e)))
-                break
+				print("exiting windows service {}".format(str(e)))
+				break
 			while self.is_running:
 				if not sock.connected:
 					reconnect()
