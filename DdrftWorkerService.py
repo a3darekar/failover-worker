@@ -45,8 +45,8 @@ class DdrftWorkerService(DaemonWin32Service):
 			logger.info('Session Interrupted by User. Program terminated')
 			logger.critical("-----------------------------------Program terminated-----------------------------------")
 			tl.stop()
-            print("exiting windows service {}".format(str(e)))
-            break
+			print("exiting windows service {}".format(str(e)))
+			break
 
 
 if __name__ == '__main__':
