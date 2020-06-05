@@ -30,7 +30,7 @@ class DdrftWorkerService(DaemonWin32Service):
 				logger.critical("-----------------------------------Program terminated-----------------------------------")
 				tl.stop()
 				print("exiting windows service {}".format(str(e)))
-				break
+				exit(0)
 			while self.is_running:
 				if not sock.connected:
 					reconnect()
@@ -46,7 +46,7 @@ class DdrftWorkerService(DaemonWin32Service):
 			logger.critical("-----------------------------------Program terminated-----------------------------------")
 			tl.stop()
 			print("exiting windows service {}".format(str(e)))
-			break
+			exit(0)
 
 
 if __name__ == '__main__':
