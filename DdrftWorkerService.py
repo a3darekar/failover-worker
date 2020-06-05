@@ -3,6 +3,8 @@ from DaemonWin32Service import DaemonWin32Service
 from client import *
 
 logger = logging.getLogger('operations')
+pingLogger = logging.getLogger('ping')
+
 
 class DdrftWorkerService(DaemonWin32Service):
 
@@ -51,6 +53,6 @@ class DdrftWorkerService(DaemonWin32Service):
 
 if __name__ == '__main__':
 
-    print("Installing {} Service".format(logger.__name__))
+    print("Installing {} Service".format(DdrftWorkerService.__name__))
 
-    logger.parse_command_line()
+    DdrftWorkerService.parse_command_line()
