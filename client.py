@@ -19,8 +19,8 @@ secondary_netmask = None
 
 logging.getLogger('timeloop').setLevel(logging.ERROR)
 
-logger = logging.getLogger('operations')
-fileHandler = logging.FileHandler('operations.log')
+logger = logging.getLogger(r'operations')
+fileHandler = logging.FileHandler(r'operations.log')
 formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] - %(message)s')
 fileHandler.setFormatter(formatter)
 logger.addHandler(fileHandler)
@@ -194,7 +194,15 @@ def connect():
 @sock.event
 def connect_error(message):
 	logger.debug(message + " Trying to recconnect in 5 seconds")
-	time.sleep(5)
+	try:
+		time.sleep(5)
+	except KeyboardInterrupt:
+		logger.info("KeyboardInterrupt occured.")
+		logger.warning("Disconnecting!")
+		logger.info('Session Interrupted by User. Program terminated')
+		logger.critical("-----------------------------------Program terminated-----------------------------------")
+		tl.stop()
+		exit()
 	reconnect()
 
 @sock.event
