@@ -1,6 +1,6 @@
 from DaemonWin32Service import DaemonWin32Service
 
-from client import *
+from client import NODE_ID, sock, await_reconnection_command
 
 logger = logging.getLogger('operations')
 pingLogger = logging.getLogger('ping')
@@ -26,7 +26,7 @@ class DdrftWorkerService(DaemonWin32Service):
 		logger.critical("-------------------------------Program Execution Started-------------------------------")
 		try:
 			logger.info("initializing Node identity, gathering IP addresses and connecting to Failover Server")
-			if NODE_ID is False:
+			if not NODE_ID:
 				logger.critical("ERROR! Could not load Node identity")
 				logger.warning("Initialize the Node identity with environment variable 'NODE_ID'. Look at README.txt for more info.")
 				logger.critical("-----------------------------------Program terminated-----------------------------------")

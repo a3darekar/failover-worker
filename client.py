@@ -228,7 +228,7 @@ if __name__ == '__main__':
 	logger.critical("-------------------------------Program Execution Started-------------------------------")
 	try:
 		logger.info("initializing Node identity, gathering IP addresses and connecting to Failover Server")
-		if NODE_ID is False:
+		if not NODE_ID:
 			logger.critical("ERROR! Could not load Node identity")
 			logger.warning("Initialize the Node identity with environment variable 'NODE_ID'. Look at README.txt for more info.")
 			logger.critical("-----------------------------------Program terminated-----------------------------------")
