@@ -6,6 +6,9 @@ from scapy.all import *
 from timeloop import Timeloop
 from datetime import timedelta, datetime
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 tl = Timeloop()
 sock = socketio.Client()
 LOGINPASSWD = os.environ.get('PASSWORD', False)
@@ -20,14 +23,14 @@ secondary_netmask = None
 logging.getLogger('timeloop').setLevel(logging.ERROR)
 
 logger = logging.getLogger(r'operations')
-fileHandler = logging.FileHandler(r'operations.log')
+fileHandler = logging.FileHandler(os.path.join(BASE_DIR, 'operations.log'))
 formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] - %(message)s')
 fileHandler.setFormatter(formatter)
 logger.addHandler(fileHandler)
 logger.setLevel(logging.DEBUG)
 
 pingLogger = logging.getLogger('ping')
-pingFileHandler = logging.FileHandler('ping.log')
+pingFileHandler = logging.FileHandler(os.path.join(BASE_DIR, 'ping.log'))
 pingFileHandler.setFormatter(formatter)
 pingLogger.addHandler(pingFileHandler)
 pingLogger.setLevel(logging.INFO)
@@ -49,7 +52,8 @@ def pingLeat():
 
 
 def get_neighbors(identity):
-	file = open('network_config.txt', 'r')
+	nw_config_path = os.path.join(BASE_DIR, 'network_config.txt')
+	file = open(nw_config_path, 'r')
 	matrices = file.readlines()
 	items = matrices[NODE_ID].rstrip('\n').split(', ')
 	neighbors = [ True if item == "True" else item for item in items ]
