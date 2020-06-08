@@ -221,31 +221,34 @@ def reconnect():
 	except Exception as e:
 		print(e)
 
-if __name__ == '__main__':
+def run():
 	tl.start()
-	logger = logging.getLogger('operations')
-	pingLogger = logging.getLogger('ping')
-	logger.critical("-------------------------------Program Execution Started-------------------------------")
-	try:
-		logger.info("initializing Node identity, gathering IP addresses and connecting to Failover Server")
-		if not NODE_ID:
-			logger.critical("ERROR! Could not load Node identity")
-			logger.warning("Initialize the Node identity with environment variable 'NODE_ID'. Look at README.txt for more info.")
+		logger.critical("-------------------------------Program Execution Started-------------------------------")
+		try:
+			logger.info("initializing Node identity, gathering IP addresses and connecting to Failover Server")
+			if not NODE_ID:
+				logger.critical("ERROR! Could not load Node identity")
+				logger.warning("Initialize the Node identity with environment variable 'NODE_ID'. Look at README.txt for more info.")
+				logger.critical("-----------------------------------Program terminated-----------------------------------")
+				tl.stop()
+				print("exiting windows service {}".format(str(e)))
+				exit(0)
+			while self.is_running:
+				if not sock.connected:
+					reconnect()
+				else:
+					ping = input("type in disconnect to terminate the session: \n")
+					if ping == 'disconnect':
+						sock.disconnect()
+						await_reconnection_command()
+		except KeyboardInterrupt:
+			logger.info("KeyboardInterrupt occured.")
+			logger.warning("Disconnecting!")
+			logger.info('Session Interrupted by User. Program terminated')
 			logger.critical("-----------------------------------Program terminated-----------------------------------")
 			tl.stop()
-			exit()
-		while True:
-			if not sock.connected:
-				reconnect()
-			else:
-				ping = input("type in disconnect to terminate the session: \n")
-				if ping == 'disconnect':
-					sock.disconnect()
-					await_reconnection_command()
-	except KeyboardInterrupt:
-		logger.info("KeyboardInterrupt occured.")
-		logger.warning("Disconnecting!")
-		logger.info('Session Interrupted by User. Program terminated')
-		logger.critical("-----------------------------------Program terminated-----------------------------------")
-		tl.stop()
-		exit()
+			print("exiting windows service {}".format(str(e)))
+			exit(0)
+
+if __name__ == '__main__':
+	self.run()
