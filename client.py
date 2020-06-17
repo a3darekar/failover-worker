@@ -1,6 +1,6 @@
 import socketio, time, datetime, os, socket, uuid, logging, sys
 from netifaces import interfaces, ifaddresses, AF_INET
-
+from config import NODE_ID, APP_URL
 from scapy.all import *
 
 from timeloop import Timeloop
@@ -12,7 +12,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 tl = Timeloop()
 sock = socketio.Client()
 LOGINPASSWD = os.environ.get('PASSWORD', False)
-NODE_ID = int(os.environ.get('NODE_ID', False))
 
 ip_interface = None
 primary_ip = None
@@ -217,38 +216,36 @@ def reconnect():
 	logger.debug("Attempting Connection")
 	try:
 		time.sleep(2)
-		sock.connect('http://localhost:5000')
+		sock.connect(APP_URL)
 	except Exception as e:
 		print(e)
 
 def run():
 	tl.start()
-		logger.critical("-------------------------------Program Execution Started-------------------------------")
-		try:
-			logger.info("initializing Node identity, gathering IP addresses and connecting to Failover Server")
-			if not NODE_ID:
-				logger.critical("ERROR! Could not load Node identity")
-				logger.warning("Initialize the Node identity with environment variable 'NODE_ID'. Look at README.txt for more info.")
-				logger.critical("-----------------------------------Program terminated-----------------------------------")
-				tl.stop()
-				print("exiting windows service {}".format(str(e)))
-				exit(0)
-			while self.is_running:
-				if not sock.connected:
-					reconnect()
-				else:
-					ping = input("type in disconnect to terminate the session: \n")
-					if ping == 'disconnect':
-						sock.disconnect()
-						await_reconnection_command()
-		except KeyboardInterrupt:
-			logger.info("KeyboardInterrupt occured.")
-			logger.warning("Disconnecting!")
-			logger.info('Session Interrupted by User. Program terminated')
+	logger.critical("-------------------------------Program Execution Started-------------------------------")
+	try:
+		logger.info("initializing Node identity, gathering IP addresses and connecting to Failover Server")
+		if not NODE_ID:
+			logger.critical("ERROR! Could not load Node identity")
+			logger.warning("Initialize the Node identity with environment variable 'NODE_ID'. Look at README.txt for more info.")
 			logger.critical("-----------------------------------Program terminated-----------------------------------")
 			tl.stop()
-			print("exiting windows service {}".format(str(e)))
 			exit(0)
+		while True:
+			if not sock.connected:
+				reconnect()
+			else:
+				ping = input("type in disconnect to terminate the session: \n")
+				if ping == 'disconnect':
+					sock.disconnect()
+					await_reconnection_command()
+	except KeyboardInterrupt:
+		logger.info("KeyboardInterrupt occured.")
+		logger.warning("Disconnecting!")
+		logger.info('Session Interrupted by User. Program terminated')
+		logger.critical("-----------------------------------Program terminated-----------------------------------")
+		tl.stop()
+		exit(0)
 
 if __name__ == '__main__':
-	self.run()
+	run()
