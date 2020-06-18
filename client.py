@@ -12,7 +12,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 tl = Timeloop()
 sock = socketio.Client()
 LOGINPASSWD = os.environ.get('PASSWORD', False)
-
 ip_interface = None
 primary_ip = None
 secondary_ip = None

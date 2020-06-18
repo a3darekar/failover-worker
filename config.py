@@ -1,2 +1,2 @@
-NODE_ID = 1
-APP_URL = "http://127.0.0.1"
+NODE_ID = 0
+APP_URL = "http://127.0.0.1:5000"

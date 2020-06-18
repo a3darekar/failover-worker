@@ -117,19 +117,15 @@ To install requrirements from requirements file, run:
 
 	$ pip install -r requirements.txt
 
-### Setting Environment variables as per requiremnts:
+### Update Server url and Node ID:
 
-- NODE_ID: Denotes Node ID in functionality. specify a number between 1 to 9.
-- PASSWORD: (Only required for Linux/MacOS)
-setting Values to environment variable.
-- For Linux:
-	export NODE_ID=[NODE Value]
-- For Windows:
-	Follow the environment variables part of this [guide](https://www.howtogeek.com/197947/how-to-install-python-on-windows/).
+Open the config.py in a text editor and update the *APP_URL* with your server system's url 
 
-### Update Server url:
+	
+	APP_URL = "http://127.0.0.1" 
 
-Replace URL "http://localhost:5000" with server url in reconnect method in client.py
+In the same file update the node id *0* to appropriate number according to your configuration.
+
 
 ### Execute Application script:
 
@@ -146,6 +142,12 @@ On MacOS and Linux:
 	or
 
 	$ python3 client.py
+
+Once confirmed, Stop this execution by hitting Ctrl + C.
+
+###  Deploying the application as a service
+
+TBA
 
 ## Logging functionality:
 
