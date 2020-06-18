@@ -145,9 +145,35 @@ On MacOS and Linux:
 
 Once confirmed, Stop this execution by hitting Ctrl + C.
 
-###  Deploying the application as a service
+###  Deploying the application as a service 
 
-TBA
+#### For Windows
+
+The simplest way is to use the: NSSM - the Non-Sucking Service Manager:
+1. Download the appropriate version of nssm application from (here)[https://nssm.cc/download]
+- Copy the *nssm.exe* to accessible location and traverse to the file in windows prompt and run  
+
+	c:>nssm.exe install WinService
+
+- On NSSM´s console, enter follwoing values and apply other appropriate settings accordingly:
+
+	path: <Environment_path_here>\Scripts\python.exe
+
+	Startup directory: <Project_path_here>
+
+	Arguments: <Project_path_here>\client.py
+
+- check the created service on **services.msc**
+
+#### For Linux
+
+follow the step 7 of setting up a service (here)[https://github.com/knowhere1998/failover-master#step-7-create-systemd-service-file]
+
+#### For MacOS
+
+Follow the steps in (this answer)[https://stackoverflow.com/a/5527943]
+
+
 
 ## Logging functionality:
 
