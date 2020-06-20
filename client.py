@@ -41,7 +41,7 @@ pingLogger.addHandler(ch)
 
 
 @tl.job(interval=timedelta(seconds=2))
-def pingLeat():
+def pingMaster():
 	if sock.connected:
 		now = datetime.now()
 		pingLogger = logging.getLogger('ping')
@@ -121,7 +121,7 @@ def await_reconnection_command():
 
 
 @sock.on('recover')
-def on_message(data):
+def recover(data):
 	logger.info("Received recovery request. Recovering node "+ str(data['disconnected_node']) + "...")
 	logger.info("creating virtual IP address: " + data['ip'])
 	if sys.platform.startswith('win'):
@@ -152,7 +152,7 @@ def on_message(data):
 
 
 @sock.on('restore')
-def on_message(data):
+def restore(data):
 	logger.info("Received restoration request. Restoring Node "+ str(data['restore_node']) + "...")
 	logger.info("Deleting virtual IP address: " + secondary_ip)
 	if secondary_ip and secondary_netmask:
